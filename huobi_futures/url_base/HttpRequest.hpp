@@ -89,7 +89,7 @@ namespace huobi_futures
                 {
                     LOG(ERROR) << "curl_easy_perform error:" << curl_easy_strerror(res);
                 }
-                LOG(ERROR) << sBuffer;
+                //LOG(INFO) << sBuffer;
 
                 std::shared_ptr<T> pObj = std::make_shared<T>();
                 JS::ParseContext parseContext(sBuffer);

@@ -63,8 +63,7 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    url_base::HttpRequest hr;
-                    auto result = hr.Post<GetAccountInfoResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountInfoResponse>(url, data.str());
                     return result;
                 }
 
@@ -103,8 +102,7 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    url_base::HttpRequest hr;
-                    auto result = hr.Post<GetAccountInfoResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountInfoResponse>(url, data.str());
                     return result;
                 }
 
@@ -143,8 +141,7 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    url_base::HttpRequest hr;
-                    auto result = hr.Post<GetAccountPositionResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionResponse>(url, data.str());
                     return result;
                 }
 
@@ -183,8 +180,7 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    url_base::HttpRequest hr;
-                    auto result = hr.Post<GetAccountPositionResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionResponse>(url, data.str());
                     return result;
                 }
 
