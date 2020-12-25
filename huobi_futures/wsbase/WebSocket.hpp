@@ -130,7 +130,7 @@ namespace huobi_futures
                 {
                     try
                     {
-                        lws_service(context, 100);
+                        lws_service(context, 0);
                     }
                     catch (...)
                     {

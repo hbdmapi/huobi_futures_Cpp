@@ -32,6 +32,9 @@ using std::pair;
 
 #include "huobi_futures/json_struct/json_struct.h"
 
+#include <algorithm>
+#include <cctype>
+
 typedef std::function<void(const string &)> _call_back_fun;
 
 namespace huobi_futures
@@ -74,7 +77,9 @@ namespace huobi_futures
                 {
                     stringstream str_buf;
                     str_buf << "wss://" << host << path;
-                    return p_ws->Connect(str_buf.str());
+                    string url = str_buf.str();
+                    LOG(INFO) << "ws full path:" << url;
+                    return p_ws->Connect(url);
                 }
 
                 void Disconnect()
@@ -82,45 +87,46 @@ namespace huobi_futures
                     DispWs();
                 }
 
-                bool Sub(const string &sub_str, const string &ch, _call_back_fun fun)
+                bool Sub(const string &sub_str, const string &ch_src, _call_back_fun fun)
                 {
+                    string ch(ch_src);
+                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
                     if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                     {
                         return true;
                     }
                     sub_map_call_fun.insert(pair<string, _call_back_fun>(ch, fun));
 
-                    p_ws->SendMsg(sub_str);
-
-                    LOG(INFO) << sub_str;
+                    send_msg_buff.push_back(sub_str);
 
                     return true;
                 }
 
-                bool Unsub(const string &unsub_str, const string &ch)
+                bool Unsub(const string &unsub_str, const string &ch_src)
                 {
+                    string ch(ch_src);
+                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
                     if (sub_map_call_fun.find(ch) == sub_map_call_fun.end())
                     {
                         return true;
                     }
-                    p_ws->SendMsg(unsub_str);
 
-                    LOG(INFO) << unsub_str;
+                    send_msg_buff.push_back(unsub_str);
 
                     return true;
                 }
 
-                bool Req(const string &reqStr, const string &ch, _call_back_fun fun)
+                bool Req(const string &req_str, const string &ch_src, _call_back_fun fun)
                 {
+                    string ch(ch_src);
+                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
                     if (req_map_call_fun.find(ch) != req_map_call_fun.end())
                     {
                         return true;
                     }
                     req_map_call_fun.insert(pair<string, _call_back_fun>(ch, fun));
 
-                    p_ws->SendMsg(reqStr);
-
-                    LOG(INFO) << reqStr;
+                    send_msg_buff.push_back(req_str);
 
                     return true;
                 }
@@ -165,6 +171,16 @@ namespace huobi_futures
 
                         string auth_str = auth.ToJson();
                         p_ws->SendMsg(auth_str);
+                        LOG(INFO) << "send:" << auth_str;
+                    }
+                    else
+                    {
+                        for (auto item : send_msg_buff)
+                        {
+                            p_ws->SendMsg(item);
+                            LOG(INFO) << "send:" << item;
+                        }
+                        send_msg_buff.clear();
                     }
                 }
 
@@ -204,16 +220,25 @@ namespace huobi_futures
                         }
                         else if (op == "close")
                         {
-                            LOG(INFO) << plaintext;
+                            LOG(INFO) << "recv:" << plaintext;
                         }
                         else if (op == "error")
                         {
-                            LOG(ERROR) << plaintext;
+                            LOG(ERROR) << "recv:" << plaintext;
                         }
 
                         else if (op == "auth")
                         {
-                            LOG(INFO) << plaintext;
+                            LOG(INFO) << "recv:" << plaintext;
+                            if (jdata["err-code"].get<int>() == 0)
+                            {
+                                for (auto item : send_msg_buff)
+                                {
+                                    p_ws->SendMsg(item);
+                                    LOG(INFO) << "send:" << item;
+                                }
+                                send_msg_buff.clear();
+                            }
                         }
                         else if (op == "notify")
                         {
@@ -221,11 +246,11 @@ namespace huobi_futures
                         }
                         else if (op == "sub")
                         {
-                            LOG(INFO) << plaintext;
+                            LOG(INFO) << "recv:" << plaintext;
                         }
                         else if (op == "unsub")
                         {
-                            LOG(INFO) << plaintext;
+                            LOG(INFO) << "recv:" << plaintext;
                             string ch = jdata["topic"].get<string>();
                             if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                             {
@@ -240,11 +265,11 @@ namespace huobi_futures
                     }
                     else if (jdata.contains("subbed")) // sub success reply
                     {
-                        LOG(INFO) << plaintext;
+                        LOG(INFO) << "recv:" << plaintext;
                     }
                     else if (jdata.contains("unsubbed")) // unsub success reply
                     {
-                        LOG(INFO) << plaintext;
+                        LOG(INFO) << "recv:" << plaintext;
                         string ch = jdata["topic"].get<string>();
                         if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                         {
@@ -262,7 +287,7 @@ namespace huobi_futures
                     }
                     else if (jdata.contains("err-code")) // market request reply data
                     {
-                        LOG(ERROR) << plaintext;
+                        LOG(ERROR) << "recv:" << plaintext;
                     }
                     else
                     {
@@ -340,6 +365,8 @@ namespace huobi_futures
                 WebSocket *p_ws;
                 string ak;
                 string sk;
+
+                list<string> send_msg_buff;
 
                 map<string, _call_back_fun> sub_map_call_fun;
                 map<string, _call_back_fun> req_map_call_fun;

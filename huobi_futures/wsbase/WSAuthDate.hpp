@@ -40,7 +40,7 @@ namespace huobi_futures
                 str_buf << "{"
                         << "\"op\":\"" << op << "\",\"type\":\"" << type << "\",\"AccessKeyId\":\"" << AccessKeyId
                         << "\",\"SignatureMethod\":\"" << SignatureMethod << "\",\"SignatureVersion\":\"" << SignatureVersion
-                        << "\",\"Timestamp\":\"" << Timestamp << "\",\"Signature\":\"" << Signature;
+                        << "\",\"Timestamp\":\"" << Timestamp << "\",\"Signature\":\"" << Signature << "\"";
                 if (!cid.empty())
                 {
                     str_buf << "\",\"cid\":\"" << cid << "\"";
