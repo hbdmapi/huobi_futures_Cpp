@@ -60,6 +60,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubOrdersResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -96,6 +97,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubOrdersResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -139,6 +141,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubAccountsResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -175,6 +178,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubAccountsResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -218,6 +222,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubPositionsResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -254,6 +259,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubPositionsResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });

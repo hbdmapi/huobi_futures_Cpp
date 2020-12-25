@@ -87,10 +87,10 @@ namespace huobi_futures
                     DispWs();
                 }
 
-                bool Sub(const string &sub_str, const string &ch_src, _call_back_fun fun)
+                bool Sub(const string &sub_str, const string &ch, _call_back_fun fun)
                 {
-                    string ch(ch_src);
-                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
+                    std::unique_lock<std::mutex> lck(mtx);
+
                     if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                     {
                         return true;
@@ -102,10 +102,10 @@ namespace huobi_futures
                     return true;
                 }
 
-                bool Unsub(const string &unsub_str, const string &ch_src)
+                bool Unsub(const string &unsub_str, const string &ch)
                 {
-                    string ch(ch_src);
-                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
+                    std::unique_lock<std::mutex> lck(mtx);
+
                     if (sub_map_call_fun.find(ch) == sub_map_call_fun.end())
                     {
                         return true;
@@ -116,10 +116,10 @@ namespace huobi_futures
                     return true;
                 }
 
-                bool Req(const string &req_str, const string &ch_src, _call_back_fun fun)
+                bool Req(const string &req_str, const string &ch, _call_back_fun fun)
                 {
-                    string ch(ch_src);
-                    std::transform(ch.begin(), ch.end(), ch.begin(), tolower);
+                    std::unique_lock<std::mutex> lck(mtx);
+
                     if (req_map_call_fun.find(ch) != req_map_call_fun.end())
                     {
                         return true;
@@ -175,6 +175,8 @@ namespace huobi_futures
                     }
                     else
                     {
+                        std::unique_lock<std::mutex> lck(mtx);
+
                         for (auto item : send_msg_buff)
                         {
                             p_ws->SendMsg(item);
@@ -232,6 +234,8 @@ namespace huobi_futures
                             LOG(INFO) << "recv:" << plaintext;
                             if (jdata["err-code"].get<int>() == 0)
                             {
+                                std::unique_lock<std::mutex> lck(mtx);
+
                                 for (auto item : send_msg_buff)
                                 {
                                     p_ws->SendMsg(item);
@@ -302,6 +306,36 @@ namespace huobi_futures
                     {
                         fun = sub_map_call_fun[ch];
                     }
+                    else if (ch == "accounts" || ch == "positions")
+                    {
+                        string contract_code = jdata["data"][0]["contract_code"].get<string>();
+                        stringstream str_buf;
+                        str_buf << ch << "." << contract_code;
+                        string full_ch = str_buf.str();
+                        if (sub_map_call_fun.find(full_ch) != sub_map_call_fun.end())
+                        {
+                            fun = sub_map_call_fun[full_ch];
+                        }
+                        else if (sub_map_call_fun.find(ch + ".*") != sub_map_call_fun.end())
+                        {
+                            fun = sub_map_call_fun[ch + ".*"];
+                        }
+                    }
+                    else if (ch == "accounts_cross" || ch == "positions_cross")
+                    {
+                        string margin_account = jdata["data"][0]["margin_account"].get<string>();
+                        stringstream str_buf;
+                        str_buf << ch << "." << margin_account;
+                        string full_ch = str_buf.str();
+                        if (sub_map_call_fun.find(full_ch) != sub_map_call_fun.end())
+                        {
+                            fun = sub_map_call_fun[full_ch];
+                        }
+                        else if (sub_map_call_fun.find(ch + ".*") != sub_map_call_fun.end())
+                        {
+                            fun = sub_map_call_fun[ch + ".*"];
+                        }
+                    }
                     else if (ch.substr(0, 7) == "orders." && sub_map_call_fun.find("orders.*") != sub_map_call_fun.end())
                     {
                         fun = sub_map_call_fun["orders.*"];
@@ -317,21 +351,6 @@ namespace huobi_futures
                     else if (ch.substr(ch.length() - 19) == ".liquidation_orders" && sub_map_call_fun.find("public.*.liquidation_orders") != sub_map_call_fun.end())
                     {
                         fun = sub_map_call_fun["public.*.liquidation_orders"];
-                    }
-                    else if (ch == "accounts" || ch == "positions")
-                    {
-                        string contract_code = jdata["data"][0]["contract_code"].get<string>();
-                        stringstream str_buf;
-                        str_buf << "{" << ch << "}.{" << contract_code << "}";
-                        string full_ch = str_buf.str();
-                        if (sub_map_call_fun.find(full_ch) != sub_map_call_fun.end())
-                        {
-                            fun = sub_map_call_fun[full_ch];
-                        }
-                        else if (sub_map_call_fun.find(ch + ".*") != sub_map_call_fun.end())
-                        {
-                            fun = sub_map_call_fun[ch + ".*"];
-                        }
                     }
 
                     if (fun == NULL)
@@ -367,6 +386,7 @@ namespace huobi_futures
                 string sk;
 
                 list<string> send_msg_buff;
+                mutex mtx;
 
                 map<string, _call_back_fun> sub_map_call_fun;
                 map<string, _call_back_fun> req_map_call_fun;

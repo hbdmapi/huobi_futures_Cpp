@@ -58,6 +58,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubKLineResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -95,6 +96,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct ReqKLineResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
@@ -119,6 +121,7 @@ namespace huobi_futures
                             std::string errorStr = parseContext.makeErrorString();
                             LOG(ERROR) << "Error parsing struct SubDepthResponse error";
                             LOG(ERROR) << data;
+                            return;
                         }
                         callbackFun(obj);
                     });
