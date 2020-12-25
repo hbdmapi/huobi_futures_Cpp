@@ -29,9 +29,9 @@ namespace huobi_futures
 
                     struct Data
                     {
-                        string symbol;
+                        std::optional<string> symbol;
 
-                        string contract_code;
+                        std::optional<string> contract_code;
 
                         string margin_asset;
 
@@ -43,7 +43,7 @@ namespace huobi_futures
 
                         float margin_frozen;
 
-                        float margin_available;
+                        std::optional<float> margin_available;
 
                         float profit_real;
 
@@ -51,21 +51,47 @@ namespace huobi_futures
 
                         float withdraw_available;
 
-                        float risk_rate;
+                        JS::Nullable<float> risk_rate;
 
-                        float liquidation_price;
+                        std::optional<JS::Nullable<float>> liquidation_price;
 
-                        float lever_rate;
+                        std::optional<float> lever_rate;
 
-                        float adjust_factor;
+                        std::optional<float> adjust_factor;
 
                         string margin_mode;
 
                         string margin_account;
 
+                        struct ContractDetail
+                        {
+                            string symbol;
+
+                            string contract_code;
+
+                            float margin_position;
+
+                            float margin_frozen;
+
+                            float margin_available;
+
+                            float profit_unreal;
+
+                            float liquidation_price;
+
+                            float lever_rate;
+
+                            float adjust_factor;
+
+                            JS_OBJ(symbol, contract_code, margin_position, margin_frozen, margin_available, profit_unreal,
+                                   liquidation_price, lever_rate, adjust_factor);
+                        };
+
+                        std::optional<std::vector<ContractDetail>> contract_detail;
+
                         JS_OBJ(symbol, contract_code, margin_asset, margin_balance, margin_static, margin_position,
                                margin_frozen, margin_available, profit_real, profit_unreal, withdraw_available, risk_rate,
-                               liquidation_price, lever_rate, adjust_factor, margin_mode, margin_account);
+                               liquidation_price, lever_rate, adjust_factor, margin_mode, margin_account, contract_detail);
                     };
 
                     std::vector<Data> data;

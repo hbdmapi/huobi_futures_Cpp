@@ -31,13 +31,13 @@ TEST(NotifyClient, SubAccounts)
     ws.IsolatedSubAccounts("BTC-USDT", [](const SubAccountsResponse &data) {
         for (auto item : data.data)
         {
-            LOG(INFO) << item.contract_code << ":" << item.margin_balance << "/" << item.margin_mode;
+            LOG(INFO) << item.contract_code.value() << ":" << item.margin_mode << "/" << item.margin_balance;
         }
     });
     ws.CrossSubAccounts("USDT", [](const SubAccountsResponse &data) {
         for (auto item : data.data)
         {
-            LOG(INFO) << item.contract_code << ":" << item.margin_balance << "/" << item.margin_mode;
+            LOG(INFO) << item.margin_mode << ":" << item.margin_asset << "/" << item.margin_balance;
         }
     });
     ws.RunForever();
