@@ -22,44 +22,44 @@ typedef huobi_futures::linear_swap::ws::NotifyClient NotifyClient;
 //     ws.RunForever();
 // }
 
-TEST(NotifyClient, SubAccounts)
-{
-    extern map<string, string> config;
-    init_config();
-
-    NotifyClient ws(config["AccessKey"], config["SecretKey"]);
-    ws.IsolatedSubAccounts("BTC-USDT", [](const SubAccountsResponse &data) {
-        for (auto item : data.data)
-        {
-            LOG(INFO) << item.contract_code.value() << ":" << item.margin_mode << "/" << item.margin_balance;
-        }
-    });
-    ws.CrossSubAccounts("USDT", [](const SubAccountsResponse &data) {
-        for (auto item : data.data)
-        {
-            LOG(INFO) << item.margin_mode << ":" << item.margin_asset << "/" << item.margin_balance;
-        }
-    });
-    ws.RunForever();
-}
-
-// TEST(NotifyClient, SubPositions)
+// TEST(NotifyClient, SubAccounts)
 // {
 //     extern map<string, string> config;
 //     init_config();
 
 //     NotifyClient ws(config["AccessKey"], config["SecretKey"]);
-//     ws.IsolatedSubPositions("XRP-USDT", [](const SubPositionsResponse &data) {
+//     ws.IsolatedSubAccounts("XRP-USDT", [](const SubAccountsResponse &data) {
 //         for (auto item : data.data)
 //         {
-//             LOG(INFO) << item.contract_code << ":" << item.volume << "/" << item.margin_mode;
+//             LOG(INFO) << item.margin_mode << ":" << item.contract_code.value() << "/" << item.margin_balance;
 //         }
 //     });
-//     ws.CrossSubPositions("XRP-USDT", [](const SubPositionsResponse &data) {
+//     ws.CrossSubAccounts("USDT", [](const SubAccountsResponse &data) {
 //         for (auto item : data.data)
 //         {
-//             LOG(INFO) << item.contract_code << ":" << item.volume << "/" << item.margin_mode;
+//             LOG(INFO) << item.margin_mode << ":" << item.margin_asset << "/" << item.margin_balance;
 //         }
 //     });
 //     ws.RunForever();
 // }
+
+TEST(NotifyClient, SubPositions)
+{
+    extern map<string, string> config;
+    init_config();
+
+    NotifyClient ws(config["AccessKey"], config["SecretKey"]);
+    ws.IsolatedSubPositions("XRP-USDT", [](const SubPositionsResponse &data) {
+        for (auto item : data.data)
+        {
+            LOG(INFO) << item.contract_code << ":" << item.direction << "/" << item.volume << "/" << item.margin_mode;
+        }
+    });
+    ws.CrossSubPositions("XRP-USDT", [](const SubPositionsResponse &data) {
+        for (auto item : data.data)
+        {
+            LOG(INFO) << item.contract_code << ":" << item.direction << "/" << item.volume << "/" << item.margin_mode;
+        }
+    });
+    ws.RunForever();
+}

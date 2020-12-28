@@ -69,7 +69,7 @@ namespace huobi_futures
                     };
                     std::vector<Data> data;
 
-                    JS_OBJ(op, topic, ts, uid, event);
+                    JS_OBJ(op, topic, ts, uid, event, data);
                 };
             } // namespace response_notify
         }     // namespace ws

@@ -27,7 +27,7 @@ namespace huobi_futures
                 stringstream str_buf;
                 str_buf << "{"
                         << "\"op\":\"" << op << "\",\"cid\":\"" << cid
-                        << "\",\"topic\":" << topic << "}";
+                        << "\",\"topic\":\"" << topic << "\"}";
 
                 return str_buf.str();
             }

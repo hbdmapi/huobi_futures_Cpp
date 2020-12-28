@@ -87,9 +87,12 @@ namespace huobi_futures
                     DispWs();
                 }
 
-                bool Sub(const string &sub_str, const string &ch, _call_back_fun fun)
+                bool Sub(const string &sub_str, const string &ch_src, _call_back_fun fun)
                 {
                     std::unique_lock<std::mutex> lck(mtx);
+                    string ch = ch_src;
+                    std::transform(ch.begin(), ch.end(), ch.begin(),
+                                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
                     if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                     {
@@ -102,9 +105,12 @@ namespace huobi_futures
                     return true;
                 }
 
-                bool Unsub(const string &unsub_str, const string &ch)
+                bool Unsub(const string &unsub_str, const string &ch_src)
                 {
                     std::unique_lock<std::mutex> lck(mtx);
+                    string ch = ch_src;
+                    std::transform(ch.begin(), ch.end(), ch.begin(),
+                                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
                     if (sub_map_call_fun.find(ch) == sub_map_call_fun.end())
                     {
@@ -116,9 +122,12 @@ namespace huobi_futures
                     return true;
                 }
 
-                bool Req(const string &req_str, const string &ch, _call_back_fun fun)
+                bool Req(const string &req_str, const string &ch_src, _call_back_fun fun)
                 {
                     std::unique_lock<std::mutex> lck(mtx);
+                    string ch = ch_src;
+                    std::transform(ch.begin(), ch.end(), ch.begin(),
+                                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
                     if (req_map_call_fun.find(ch) != req_map_call_fun.end())
                     {
@@ -299,16 +308,24 @@ namespace huobi_futures
                     }
                 }
 
-                void HandleSubCallbackFun(const string &ch, const string &data, const nlohmann::json &jdata)
+                void HandleSubCallbackFun(const string &ch_src, const string &data, const nlohmann::json &jdata)
                 {
+                    //LOG(INFO) << data;
+                    string ch = ch_src;
+                    std::transform(ch.begin(), ch.end(), ch.begin(),
+                                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
+
                     _call_back_fun fun = NULL;
                     if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                     {
                         fun = sub_map_call_fun[ch];
                     }
-                    else if (ch == "accounts" || ch == "positions")
+                    else if (ch == "accounts" || ch == "positions" || ch == "positions_cross")
                     {
                         string contract_code = jdata["data"][0]["contract_code"].get<string>();
+                        std::transform(contract_code.begin(), contract_code.end(), contract_code.begin(),
+                                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
+
                         stringstream str_buf;
                         str_buf << ch << "." << contract_code;
                         string full_ch = str_buf.str();
@@ -321,9 +338,12 @@ namespace huobi_futures
                             fun = sub_map_call_fun[ch + ".*"];
                         }
                     }
-                    else if (ch == "accounts_cross" || ch == "positions_cross")
+                    else if (ch == "accounts_cross")
                     {
                         string margin_account = jdata["data"][0]["margin_account"].get<string>();
+                        std::transform(margin_account.begin(), margin_account.end(), margin_account.begin(),
+                                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
+
                         stringstream str_buf;
                         str_buf << ch << "." << margin_account;
                         string full_ch = str_buf.str();
@@ -362,8 +382,13 @@ namespace huobi_futures
                     fun(data);
                 }
 
-                void HandleReqCallbackFun(string ch, string data, const nlohmann::json &jdata)
+                void HandleReqCallbackFun(string ch_src, string data, const nlohmann::json &jdata)
                 {
+                    //LOG(INFO) << data;
+                    string ch = ch_src;
+                    std::transform(ch.begin(), ch.end(), ch.begin(),
+                                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
+
                     if (req_map_call_fun.find(ch) == req_map_call_fun.end())
                     {
                         LOG(ERROR) << "no callback function to handle:" << data;
