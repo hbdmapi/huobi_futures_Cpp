@@ -1,8 +1,8 @@
-# Huobi Futures Cpp SDK (but only supports linear swap now)
+# Huobi Futures Cpp Demo (but only supports linear swap now)
 
-This is Huobi Cpp SDK as interface library, you can import it to your application.
+This is Huobi Cpp Demo as interface library, you can import it to your application.
 
-The SDK API supports both RESTful and websocket to get/sub the market, account and order infomation.
+The Demo API supports both RESTful and websocket to get/sub the market, account and order infomation.
 
 ## Table of Contents
 
