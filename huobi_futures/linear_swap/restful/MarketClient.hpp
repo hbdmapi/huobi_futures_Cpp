@@ -11,6 +11,12 @@ using std::stringstream;
 #include "huobi_futures/linear_swap/restful/response/market/GetContractInfoResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetContractInfoResponse GetContractInfoResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetIndexResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetIndexResponse GetIndexResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetPriceLimitResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetPriceLimitResponse GetPriceLimitResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetDepthResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetDepthResponse GetDepthResponse;
 
@@ -55,6 +61,41 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetContractInfoResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetIndexResponse> GetIndex(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_index";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetIndexResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetPriceLimitResponse> GetPriceLimit(const string &contract_code)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_price_limit?contract_code=" << contract_code;
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetPriceLimitResponse>(url);
                     return result;
                 }
 

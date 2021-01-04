@@ -21,7 +21,7 @@ namespace huobi_futures
 
                     string status;
 
-                    std::optional<string> err_code;
+                    std::optional<int32_t> err_code;
 
                     std::optional<string> err_msg;
 
