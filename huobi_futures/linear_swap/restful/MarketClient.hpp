@@ -17,14 +17,23 @@ typedef huobi_futures::linear_swap::restful::response_market::GetIndexResponse G
 #include "huobi_futures/linear_swap/restful/response/market/GetPriceLimitResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetPriceLimitResponse GetPriceLimitResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetOpenInterestResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetOpenInterestResponse GetOpenInterestResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetDepthResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetDepthResponse GetDepthResponse;
 
 #include "huobi_futures/linear_swap/restful/response/market/GetKLineResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetKLineResponse GetKLineResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetMergedResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetMergedResponse GetMergedResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetTradeResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetTradeResponse GetTradeResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetHisTradeResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetHisTradeResponse GetHisTradeResponse;
 
 namespace huobi_futures
 {
@@ -99,6 +108,29 @@ namespace huobi_futures
                     return result;
                 }
 
+                std::shared_ptr<GetOpenInterestResponse> GetOpenInterest(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_open_interest";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetOpenInterestResponse>(url);
+                    return result;
+                }
+
                 std::shared_ptr<GetDepthResponse> GetDepth(const string &contract_code, const string &type)
                 {
                     // location
@@ -149,6 +181,27 @@ namespace huobi_futures
                     return result;
                 }
 
+                std::shared_ptr<GetMergedResponse> GetMerged(const string &contract_code)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-ex/market/detail/merged";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code;
+
+                    if (!contract_code.empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetMergedResponse>(url);
+                    return result;
+                }
+
                 std::shared_ptr<GetTradeResponse> GetTrade(const string &contract_code)
                 {
                     // location
@@ -159,7 +212,7 @@ namespace huobi_futures
                     stringstream option;
                     option << "contract_code=" << contract_code;
 
-                    if (!option.str().empty())
+                    if (!contract_code.empty())
                     {
                         location << "?" << option.str();
                     }
@@ -167,6 +220,27 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetTradeResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetHisTradeResponse> GetHisTrade(const string &contract_code, int size = 1)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-ex/market/trade";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&size=" << size;
+
+                    if (!contract_code.empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetHisTradeResponse>(url);
                     return result;
                 }
 
