@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_market
             {
-                struct GetElitePositionRatioResponse
+                struct GetEliteRatioResponse
                 {
                     string status;
 
@@ -29,20 +29,20 @@ namespace huobi_futures
 
                         string contract_code;
 
-                        struct ShortLongRatio
+                        struct List
                         {
                             float buy_ratio;
 
-                            float sellRatio;
+                            float sell_ratio;
 
                             std::optional<float> locked_ratio;
 
                             int64_t ts;
 
-                            JS_OBJ(buy_ratio, sellRatio, locked_ratio, ts);
+                            JS_OBJ(buy_ratio, sell_ratio, locked_ratio, ts);
                         };
 
-                        std::vector<ShortLongRatio> list;
+                        std::vector<List> list;
 
                         JS_OBJ(symbol, contract_code, list);
                     };

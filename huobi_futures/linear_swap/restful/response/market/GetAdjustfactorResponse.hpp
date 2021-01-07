@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_market
             {
-                struct GetAdjustFactorFundResponse
+                struct GetAdjustfactorResponse
                 {
                     string status;
 
@@ -29,13 +29,15 @@ namespace huobi_futures
 
                         std::optional<string> contract_code;
 
-                        struct AdjustFactor
-                        {
-                            struct Ladder
-                            {
-                                float min_size;
+                        string margin_mode;
 
-                                float max_size;
+                        struct List
+                        {
+                            struct Ladders
+                            {
+                                int32_t min_size;
+
+                                JS::Nullable<int32_t> max_size;
 
                                 int32_t ladder;
 
@@ -44,15 +46,15 @@ namespace huobi_futures
                                 JS_OBJ(min_size, max_size, ladder, adjust_factor);
                             };
 
-                            std::optional<float> lever_rate;
+                            std::optional<int32_t> lever_rate;
 
-                            std::vector<Ladder> ladders;
+                            std::vector<Ladders> ladders;
 
                             JS_OBJ(lever_rate, ladders);
                         };
-                        std::vector<AdjustFactor> list;
+                        std::vector<List> list;
 
-                        JS_OBJ(symbol, contract_code, list);
+                        JS_OBJ(symbol, contract_code, margin_mode, list);
                     };
 
                     std::optional<std::vector<Data>> data;

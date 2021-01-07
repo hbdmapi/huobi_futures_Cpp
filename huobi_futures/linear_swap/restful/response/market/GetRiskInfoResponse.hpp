@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_market
             {
-                struct GetFundingRateResponse
+                struct GetRiskInfoResponse
                 {
                     string status;
 
@@ -23,29 +23,22 @@ namespace huobi_futures
 
                     std::optional<string> err_msg;
 
+                    int64_t ts;
+
                     struct Data
                     {
-                        string symbol;
+                        float estimated_clawback;
+
+                        float insurance_fund;
 
                         string contract_code;
 
-                        string fee_asset;
-
-                        string funding_time;
-
-                        string funding_rate;
-
-                        string estimated_rate;
-
-                        string next_funding_time;
-
-                        JS_OBJ(symbol, contract_code, fee_asset, funding_time, funding_rate, estimated_rate, next_funding_time);
+                        JS_OBJ(estimated_clawback, insurance_fund, contract_code);
                     };
-                    std::optional<Data> data;
 
-                    int64_t ts;
+                    std::optional<std::vector<Data>> data;
 
-                    JS_OBJ(status, err_code, err_msg, data, ts);
+                    JS_OBJ(status, err_code, err_msg, data);
                 };
             } // namespace response_market
         }     // namespace restful

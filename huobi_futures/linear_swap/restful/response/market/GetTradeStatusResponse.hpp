@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_market
             {
-                struct GetApiStatusResponse
+                struct GetTradeStatusResponse
                 {
                     string status;
 
@@ -35,33 +35,11 @@ namespace huobi_futures
 
                         int32_t cancel;
 
-                        int32_t transfer_in;
-
-                        int32_t transfer_out;
-
-                        int32_t master_transfer_sub;
-
-                        int32_t sub_transfer_master;
-
-                        int32_t master_transfer_sub_inner_in;
-
-                        int32_t master_transfer_sub_inner_out;
-
-                        int32_t sub_transfer_master_inner_in;
-
-                        int32_t sub_transfer_master_inner_out;
-
-                        int32_t transfer_inner_in;
-
-                        int32_t transfer_inner_out;
-
                         string margin_mode;
 
                         string margin_account;
 
-                        JS_OBJ(symbol, contract_code, open, close, cancel, transfer_in, transfer_out, master_transfer_sub, sub_transfer_master, \
-                              master_transfer_sub_inner_in, master_transfer_sub_inner_out, sub_transfer_master_inner_in, sub_transfer_master_inner_out, \
-                              transfer_inner_in, transfer_inner_out, margin_mode, margin_account);
+                        JS_OBJ(symbol, contract_code, open, close, cancel, margin_mode, margin_account);
                     };
 
                     std::optional<std::vector<Data>> data;

@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_market
             {
-                struct GetApiStatusResponse
+                struct GetTransferStatusResponse
                 {
                     string status;
 
@@ -25,16 +25,6 @@ namespace huobi_futures
 
                     struct Data
                     {
-                        string symbol;
-
-                        string contract_code;
-
-                        int32_t open;
-
-                        int32_t close;
-
-                        int32_t cancel;
-
                         int32_t transfer_in;
 
                         int32_t transfer_out;
@@ -59,7 +49,7 @@ namespace huobi_futures
 
                         string margin_account;
 
-                        JS_OBJ(symbol, contract_code, open, close, cancel, transfer_in, transfer_out, master_transfer_sub, sub_transfer_master, \
+                        JS_OBJ(transfer_in, transfer_out, master_transfer_sub, sub_transfer_master, \
                               master_transfer_sub_inner_in, master_transfer_sub_inner_out, sub_transfer_master_inner_in, sub_transfer_master_inner_out, \
                               transfer_inner_in, transfer_inner_out, margin_mode, margin_account);
                     };
