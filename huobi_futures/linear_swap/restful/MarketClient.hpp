@@ -35,6 +35,36 @@ typedef huobi_futures::linear_swap::restful::response_market::GetTradeResponse G
 #include "huobi_futures/linear_swap/restful/response/market/GetHisTradeResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetHisTradeResponse GetHisTradeResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetRiskInfoResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetRiskInfoResponse GetRiskInfoResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetInsurancefundResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetInsurancefundResponse GetInsurancefundResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetAdjustfactorResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetAdjustfactorResponse GetAdjustfactorResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetHisOpenInterestResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetHisOpenInterestResponse GetHisOpenInterestResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetEliteRatioResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetEliteRatioResponse GetEliteRatioResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetApiStatusResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetApiStatusResponse GetApiStatusResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetTransferStatusResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetTransferStatusResponse GetTransferStatusResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetTradeStatusResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetTradeStatusResponse GetTradeStatusResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetFundingRateResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetFundingRateResponse GetFundingRateResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetHisFundingRateResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetHisFundingRateResponse GetHisFundingRateResponse;
+
 namespace huobi_futures
 {
     namespace linear_swap
@@ -241,6 +271,271 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetHisTradeResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetRiskInfoResponse> GetRiskInfo(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_risk_info";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetRiskInfoResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetInsurancefundResponse> GetInsurancefund(const string &contract_code, int page_index = 1, int page_size = 100)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_insurance_fund";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&page_index=" << page_index << "&page_size=" << page_size;
+
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetInsurancefundResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetAdjustfactorResponse> IsolatedGetAdjustfactor(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_adjustfactor";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetAdjustfactorResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetAdjustfactorResponse> CrossGetAdjustfactor(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_cross_adjustfactor";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetAdjustfactorResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetHisOpenInterestResponse> GetHisOpenInterest(const string &contract_code, const string &period, int amount_type, int size = 48)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_his_open_interest";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period << "&amount_type=" << amount_type << "&size=" << size;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetHisOpenInterestResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetEliteRatioResponse> GetEliteAccountRatio(const string &contract_code, const string &period)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_elite_account_ratio";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetEliteRatioResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetEliteRatioResponse> GetElitePositionRatio(const string &contract_code, const string &period)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_elite_position_ratio";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetEliteRatioResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetApiStatusResponse> IsolatedGetApiStatus(const string &contract_code="")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_api_state";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetApiStatusResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetTransferStatusResponse> CrossGetTransferStatus(const string &margin_account="")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_cross_transfer_state";
+
+                    // option
+                    stringstream option;
+                    if (margin_account != "")
+                    {
+                        option << "margin_account=" << margin_account;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetTransferStatusResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetTradeStatusResponse> CrossGetTradeStatus(const string &contract_code="")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_cross_trade_state";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetTradeStatusResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetFundingRateResponse> GetFundingRate(const string &contract_code="")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_funding_rate";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetFundingRateResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetHisFundingRateResponse> GetHisFundingRate(const string &contract_code="")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_historical_funding_rate";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetHisFundingRateResponse>(url);
                     return result;
                 }
 
