@@ -65,6 +65,18 @@ typedef huobi_futures::linear_swap::restful::response_market::GetFundingRateResp
 #include "huobi_futures/linear_swap/restful/response/market/GetHisFundingRateResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetHisFundingRateResponse GetHisFundingRateResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetLiquidationOrdersResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetLiquidationOrdersResponse GetLiquidationOrdersResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetSettlementRecordsResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetSettlementRecordsResponse GetSettlementRecordsResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetStrKLineResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetStrKLineResponse GetStrKLineResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetBasisResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetBasisResponse GetBasisResponse;
+
 namespace huobi_futures
 {
     namespace linear_swap
@@ -424,7 +436,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetApiStatusResponse> IsolatedGetApiStatus(const string &contract_code="")
+                std::shared_ptr<GetApiStatusResponse> IsolatedGetApiStatus(const string &contract_code = "")
                 {
                     // location
                     stringstream location;
@@ -447,7 +459,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetTransferStatusResponse> CrossGetTransferStatus(const string &margin_account="")
+                std::shared_ptr<GetTransferStatusResponse> CrossGetTransferStatus(const string &margin_account = "")
                 {
                     // location
                     stringstream location;
@@ -470,7 +482,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetTradeStatusResponse> CrossGetTradeStatus(const string &contract_code="")
+                std::shared_ptr<GetTradeStatusResponse> CrossGetTradeStatus(const string &contract_code = "")
                 {
                     // location
                     stringstream location;
@@ -493,7 +505,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetFundingRateResponse> GetFundingRate(const string &contract_code="")
+                std::shared_ptr<GetFundingRateResponse> GetFundingRate(const string &contract_code = "")
                 {
                     // location
                     stringstream location;
@@ -516,7 +528,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetHisFundingRateResponse> GetHisFundingRate(const string &contract_code="")
+                std::shared_ptr<GetHisFundingRateResponse> GetHisFundingRate(const string &contract_code = "")
                 {
                     // location
                     stringstream location;
@@ -536,6 +548,118 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetHisFundingRateResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetLiquidationOrdersResponse> GetLiquidationOrders(const string &contract_code, int trade_type,
+                                                                                   int create_date, int page_index = 1, int page_size = 20)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_liquidation_orders";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&trade_type=" << trade_type << "&create_date=" << create_date
+                           << "&page_index=" << page_index << "&page_size=" << page_size;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetLiquidationOrdersResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetSettlementRecordsResponse> GetSettlementRecords(const string &contract_code, long start_time = -1,
+                                                                                   long end_time = -1, int page_index = 1, int page_size = 20)
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_settlement_records";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&page_index=" << page_index << "&page_size=" << page_size;
+                    if (start_time != -1)
+                    {
+                        option << "&start_time=" << start_time;
+                    }
+                    if (end_time != -1)
+                    {
+                        option << "&end_time=" << end_time;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetSettlementRecordsResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetStrKLineResponse> GetPremiumIndexKlineResponse(const string &contract_code, const string &period, int size)
+                {
+                    // location
+                    stringstream location;
+                    location << "/index/market/history/linear_swap_premium_index_kline";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period << "&size=" << size;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetStrKLineResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetStrKLineResponse> GetEstimatedRateKlineResponse(const string &contract_code, const string &period, int size)
+                {
+                    // location
+                    stringstream location;
+                    location << "/index/market/history/linear_swap_estimated_rate_kline";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period << "&size=" << size;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetStrKLineResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetBasisResponse> GetBasis(const string &contract_code, const string &period,
+                                                           const string &basis_price_type = "open", int size = 150)
+                {
+                    // location
+                    stringstream location;
+                    location << "/index/market/history/linear_swap_basis";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period << "&basis_price_type=" << basis_price_type << "&size=" << size;
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetBasisResponse>(url);
                     return result;
                 }
 

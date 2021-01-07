@@ -235,7 +235,7 @@ TEST(MarketClient, GetFundingRate)
     auto result = mkClient.GetFundingRate("BTC-USDT");
     EXPECT_EQ(result->err_code.has_value(), false);
 
-    LOG(INFO) << result->data.value().contract_code << "/" << result->data.value().funding_rate<< "/" << result->data.value().funding_time;
+    LOG(INFO) << result->data.value().contract_code << "/" << result->data.value().funding_rate << "/" << result->data.value().funding_time;
 }
 
 TEST(MarketClient, GetHisFundingRate)
@@ -247,5 +247,65 @@ TEST(MarketClient, GetHisFundingRate)
     for (auto pv : result->data.value().data)
     {
         LOG(INFO) << pv.contract_code << "/" << pv.funding_rate << "/" << pv.funding_time;
+    }
+}
+
+TEST(MarketClient, GetLiquidationOrders)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetLiquidationOrders("BTC-USDT", 0, 7);
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto pv : result->data.value().orders)
+    {
+        LOG(INFO) << pv.contract_code << "/" << pv.direction << "/" << pv.offset << "/" << pv.price << "/" << pv.volume;
+    }
+}
+
+TEST(MarketClient, GetSettlementRecords)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetSettlementRecords("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto pv : result->data.value().settlement_record)
+    {
+        LOG(INFO) << pv.contract_code << "/" << pv.settlement_price << "/" << pv.settlement_type;
+    }
+}
+
+TEST(MarketClient, GetPremiumIndexKlineResponse)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetPremiumIndexKlineResponse("BTC-USDT", "1min", 1);
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto pv : result->data.value())
+    {
+        LOG(INFO) << pv.vol << "/" << pv.count << "/" << pv.amount;
+    }
+}
+
+TEST(MarketClient, GetEstimatedRateKlineResponse)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetEstimatedRateKlineResponse("BTC-USDT", "1min", 1);
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto pv : result->data.value())
+    {
+        LOG(INFO) << pv.vol << "/" << pv.count << "/" << pv.amount;
+    }
+}
+
+TEST(MarketClient, GetBasis)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetBasis("BTC-USDT", "1min");
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto pv : result->data.value())
+    {
+        LOG(INFO) << pv.contract_price << "/" << pv.index_price << "/" << pv.basis;
     }
 }
