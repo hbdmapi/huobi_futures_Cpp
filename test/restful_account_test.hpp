@@ -28,19 +28,19 @@ TEST(AccountClient, GetAccountInfo)
     }
 }
 
-TEST(AccountClient, GetAccountPosition)
+TEST(AccountClient, GetPositionInfo)
 {
     extern map<string, string> config;
     init_config();
     AccountClient acClient(config["AccessKey"], config["SecretKey"]);
-    auto result = acClient.IsolatedGetAccountPosition("");
+    auto result = acClient.IsolatedGetPositionInfo("");
     EXPECT_EQ(result->err_code.has_value(), false);
     for (auto item : result->data.value())
     {
         LOG(INFO) << item.symbol << ":" << item.position_margin;
     }
 
-    result = acClient.CrossGetAccountPosition();
+    result = acClient.CrossGetPositionInfo();
     EXPECT_EQ(result->err_code.has_value(), false);
     for (auto item : result->data.value())
     {

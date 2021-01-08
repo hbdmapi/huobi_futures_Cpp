@@ -10,8 +10,8 @@
 #include "huobi_futures/linear_swap/restful/response/account/GetAccountInfoResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_account::GetAccountInfoResponse GetAccountInfoResponse;
 
-#include "huobi_futures/linear_swap/restful/response/account/GetAccountPositionResponse.hpp"
-typedef huobi_futures::linear_swap::restful::response_account::GetAccountPositionResponse GetAccountPositionResponse;
+#include "huobi_futures/linear_swap/restful/response/account/GetPositionInfoResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_account::GetPositionInfoResponse GetPositionInfoResponse;
 
 namespace huobi_futures
 {
@@ -106,7 +106,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetAccountPositionResponse> IsolatedGetAccountPosition(const string &contract_code = "", int sub_uid = -1)
+                std::shared_ptr<GetPositionInfoResponse> IsolatedGetPositionInfo(const string &contract_code = "", int sub_uid = -1)
                 {
                     // path
                     stringstream path;
@@ -141,11 +141,11 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetPositionInfoResponse>(url, data.str());
                     return result;
                 }
 
-                std::shared_ptr<GetAccountPositionResponse> CrossGetAccountPosition(const string &contract_code = "", int sub_uid = -1)
+                std::shared_ptr<GetPositionInfoResponse> CrossGetPositionInfo(const string &contract_code = "", int sub_uid = -1)
                 {
                     // path
                     stringstream path;
@@ -180,7 +180,7 @@ namespace huobi_futures
                     string url = pb->Build("POST", path.str());
 
                     // post
-                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionResponse>(url, data.str());
+                    auto result = url_base::HttpRequest::Instance().Post<GetPositionInfoResponse>(url, data.str());
                     return result;
                 }
 

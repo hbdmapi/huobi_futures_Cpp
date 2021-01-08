@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_account
             {
-                struct GetAccountPositionResponse
+                struct GetPositionInfoResponse
                 {
                     string status;
 
