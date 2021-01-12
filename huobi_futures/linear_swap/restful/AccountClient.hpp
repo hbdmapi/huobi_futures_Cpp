@@ -13,6 +13,12 @@ typedef huobi_futures::linear_swap::restful::response_account::GetAccountInfoRes
 #include "huobi_futures/linear_swap/restful/response/account/GetPositionInfoResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_account::GetPositionInfoResponse GetPositionInfoResponse;
 
+#include "huobi_futures/linear_swap/restful/response/account/GetAccountPositionResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_account::GetAccountPositionResponse GetAccountPositionResponse;
+
+#include "huobi_futures/linear_swap/restful/response/account/GetAccountPositionSingleResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_account::GetAccountPositionSingleResponse GetAccountPositionSingleResponse;
+
 namespace huobi_futures
 {
     namespace linear_swap
@@ -181,6 +187,56 @@ namespace huobi_futures
 
                     // post
                     auto result = url_base::HttpRequest::Instance().Post<GetPositionInfoResponse>(url, data.str());
+                    return result;
+                }
+
+                std::shared_ptr<GetAccountPositionResponse> IsolatedGetAccountPosition(const string &contract_code)
+                {
+                    // path
+                    stringstream path;
+                    path << "/linear-swap-api/v1/swap_account_position_info";
+
+                    // option
+                    stringstream content;
+                    content << ",\"contract_code\":\"" << contract_code << "\"";
+
+                    // data
+                    stringstream data;
+                    if (!content.str().empty())
+                    {
+                        data << "{" << content.str().substr(1) << "}";
+                    }
+
+                    // url
+                    string url = pb->Build("POST", path.str());
+
+                    // post
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionResponse>(url, data.str());
+                    return result;
+                }
+
+                std::shared_ptr<GetAccountPositionSingleResponse> CrossGetAccountPosition(const string &margin_account)
+                {
+                    // path
+                    stringstream path;
+                    path << "/linear-swap-api/v1/swap_cross_account_position_info";
+
+                    // option
+                    stringstream content;
+                    content << ",\"margin_account\":\"" << margin_account << "\"";
+
+                    // data
+                    stringstream data;
+                    if (!content.str().empty())
+                    {
+                        data << "{" << content.str().substr(1) << "}";
+                    }
+
+                    // url
+                    string url = pb->Build("POST", path.str());
+
+                    // post
+                    auto result = url_base::HttpRequest::Instance().Post<GetAccountPositionSingleResponse>(url, data.str());
                     return result;
                 }
 

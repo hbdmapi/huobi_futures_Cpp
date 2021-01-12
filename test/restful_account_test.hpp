@@ -47,3 +47,22 @@ TEST(AccountClient, GetPositionInfo)
         LOG(INFO) << item.symbol << ":" << item.position_margin;
     }
 }
+
+TEST(AccountClient, GetAccountPosition)
+{
+    extern map<string, string> config;
+    init_config();
+    AccountClient acClient(config["AccessKey"], config["SecretKey"]);
+    auto result = acClient.IsolatedGetAccountPosition("XRP-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+    for (auto item : result->data.value())
+    {
+        LOG(INFO) << item.margin_mode << ":" << item.margin_balance;
+    }
+
+    auto result_s = acClient.CrossGetAccountPosition("USDT");
+    EXPECT_EQ(result_s->err_code.has_value(), false);
+
+    auto item = result_s->data.value();
+    LOG(INFO) << item.margin_mode << ":" << item.margin_balance;
+}
