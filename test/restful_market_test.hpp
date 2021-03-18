@@ -73,6 +73,14 @@ TEST(MarketClient, GetKLine)
     LOG(INFO) << result->data.value().data()->amount;
 }
 
+TEST(MarketClient, GetMarkPriceKLine)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetMarkPriceKLine("BTC-USDT", "1day", 1);
+    EXPECT_EQ(result->err_code.has_value(), false);
+    LOG(INFO) << result->data.value().data()->amount;
+}
+
 TEST(MarketClient, GetMerged)
 {
     MarketClient mkClient;
@@ -80,6 +88,16 @@ TEST(MarketClient, GetMerged)
     EXPECT_EQ(result->err_code.has_value(), false);
 
     auto pv = result->tick.value().ask;
+    LOG(INFO) << *(pv.begin()) << "/" << *(pv.begin() + 1);
+}
+
+TEST(MarketClient, GetBatchMerged)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetBatchMerged("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    auto pv = result->ticks.value()[0].ask;
     LOG(INFO) << *(pv.begin()) << "/" << *(pv.begin() + 1);
 }
 
@@ -99,9 +117,13 @@ TEST(MarketClient, GetHisTrade)
     MarketClient mkClient;
     auto result = mkClient.GetHisTrade("BTC-USDT", 10);
     EXPECT_EQ(result->err_code.has_value(), false);
-    for (auto pv : result->tick.value().data)
+    for (auto item : result->data.value())
     {
-        LOG(INFO) << pv.amount << "/" << pv.direction << "/" << pv.price;
+        LOG(INFO) << item.ts;
+        for(auto pv: item.data)
+        {
+            LOG(INFO) << pv.amount << "/" << pv.direction << "/" << pv.price;
+        }   
     }
 }
 
@@ -161,6 +183,19 @@ TEST(MarketClient, GetAdjustfactor)
     }
 }
 
+TEST(MarketClient, GetEstimatedSettlementPrice)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetEstimatedSettlementPrice("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto item : result->data.value())
+    {
+        LOG(INFO) << item.contract_code << "/" << item.estimated_settlement_price.data;
+    }
+}
+
+
 TEST(MarketClient, GetHisOpenInterest)
 {
     MarketClient mkClient;
@@ -173,18 +208,35 @@ TEST(MarketClient, GetHisOpenInterest)
     }
 }
 
+TEST(MarketClient, GetLadderMargin)
+{
+    MarketClient mkClient;
+    auto result = mkClient.IsolatedGetLadderMargin("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+
+    for (auto item : result->data.value())
+    {
+        for (auto pv : item.list)
+        {
+            LOG(INFO) << pv.lever_rate;
+        }
+    }
+
+    result = mkClient.CrossGetLadderMargin("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+    for (auto item : result->data.value())
+    {
+        for (auto pv : item.list)
+        {
+            LOG(INFO) << pv.lever_rate;
+        }
+    }
+}
+
 TEST(MarketClient, GetEliteRatio)
 {
     MarketClient mkClient;
     auto result = mkClient.GetEliteAccountRatio("BTC-USDT", "5min");
-    EXPECT_EQ(result->err_code.has_value(), false);
-
-    for (auto pv : result->data.value().list)
-    {
-        LOG(INFO) << pv.buy_ratio << "/" << pv.sell_ratio;
-    }
-
-    result = mkClient.GetElitePositionRatio("BTC-USDT", "5min");
     EXPECT_EQ(result->err_code.has_value(), false);
 
     for (auto pv : result->data.value().list)

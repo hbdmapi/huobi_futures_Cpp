@@ -17,8 +17,6 @@ namespace huobi_futures
             {
                 struct GetHisTradeResponse
                 {
-                    std::optional<string> ch;
-
                     string status;
 
                     std::optional<int32_t> err_code;
@@ -51,9 +49,9 @@ namespace huobi_futures
 
                         JS_OBJ(id, ts, data);
                     };
-                    std::optional<HisTrade> tick;
+                    std::optional<std::vector<HisTrade>> data;
 
-                    JS_OBJ(ch, status, err_code, err_msg, ts, tick);
+                    JS_OBJ(status, err_code, err_msg, ts, data);
                 };
             } // namespace response_market
         }     // namespace restful

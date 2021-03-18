@@ -29,6 +29,9 @@ typedef huobi_futures::linear_swap::restful::response_market::GetKLineResponse G
 #include "huobi_futures/linear_swap/restful/response/market/GetMergedResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetMergedResponse GetMergedResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetBatchMergedResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetBatchMergedResponse GetBatchMergedResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetTradeResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetTradeResponse GetTradeResponse;
 
@@ -44,8 +47,14 @@ typedef huobi_futures::linear_swap::restful::response_market::GetInsurancefundRe
 #include "huobi_futures/linear_swap/restful/response/market/GetAdjustfactorResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetAdjustfactorResponse GetAdjustfactorResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetEstimatedSettlementPriceResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetEstimatedSettlementPriceResponse GetEstimatedSettlementPriceResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetHisOpenInterestResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetHisOpenInterestResponse GetHisOpenInterestResponse;
+
+#include "huobi_futures/linear_swap/restful/response/market/GetLadderMarginResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetLadderMarginResponse GetLadderMarginResponse;
 
 #include "huobi_futures/linear_swap/restful/response/market/GetEliteRatioResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetEliteRatioResponse GetEliteRatioResponse;
@@ -223,6 +232,27 @@ namespace huobi_futures
                     return result;
                 }
 
+                std::shared_ptr<GetKLineResponse> GetMarkPriceKLine(const string &contract_code, const string &period, int size)
+                {
+                    // location
+                    stringstream location;
+                    location << "/index/market/history/linear_swap_mark_price_kline";
+
+                    // option
+                    stringstream option;
+                    option << "contract_code=" << contract_code << "&period=" << period << "&size=" << size;
+
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetKLineResponse>(url);
+                    return result;
+                }
+
                 std::shared_ptr<GetMergedResponse> GetMerged(const string &contract_code)
                 {
                     // location
@@ -241,6 +271,30 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetMergedResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetBatchMergedResponse> GetBatchMerged(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-ex/market/detail/batch_merged";
+
+                    // option
+                    stringstream option;
+                    if (!contract_code.empty())
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+
+                    if (!contract_code.empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetBatchMergedResponse>(url);
                     return result;
                 }
 
@@ -269,7 +323,7 @@ namespace huobi_futures
                 {
                     // location
                     stringstream location;
-                    location << "/linear-swap-ex/market/trade";
+                    location << "/linear-swap-ex/market/history/trade";
 
                     // option
                     stringstream option;
@@ -376,6 +430,29 @@ namespace huobi_futures
                     return result;
                 }
 
+                std::shared_ptr<GetEstimatedSettlementPriceResponse> GetEstimatedSettlementPrice(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_estimated_settlement_price";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetEstimatedSettlementPriceResponse>(url);
+                    return result;
+                }
+
                 std::shared_ptr<GetHisOpenInterestResponse> GetHisOpenInterest(const string &contract_code, const string &period, int amount_type, int size = 48)
                 {
                     // location
@@ -393,6 +470,52 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetHisOpenInterestResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetLadderMarginResponse> IsolatedGetLadderMargin(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_ladder_margin";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetLadderMarginResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetLadderMarginResponse> CrossGetLadderMargin(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-api/v1/swap_cross_ladder_margin";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetLadderMarginResponse>(url);
                     return result;
                 }
 
