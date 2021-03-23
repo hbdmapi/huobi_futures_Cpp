@@ -98,9 +98,8 @@ namespace huobi_futures
                 if (parseContext.parseTo(*pObj) != JS::Error::NoError)
                 {
                     std::string errorStr = parseContext.makeErrorString();
-                    LOG(ERROR) << "Error parsing struct %s\n"
-                               << errorStr.c_str();
-                    LOG(ERROR) << sBuffer;
+                    LOG(ERROR) << "Error parsing struct:\n"
+                               << sBuffer;
                     return NULL;
                 }
                 return pObj;
