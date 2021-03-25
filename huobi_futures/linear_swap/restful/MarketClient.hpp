@@ -203,7 +203,7 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetKLineResponse> GetKLine(const string &contract_code, const string &period, int size = 150, long from = -1, long to = -1)
+                std::shared_ptr<GetKLineResponse> GetKLine(const string &contract_code, const string &period, int size = 150, long from = 0, long to = 0)
                 {
                     // location
                     stringstream location;
@@ -212,11 +212,11 @@ namespace huobi_futures
                     // option
                     stringstream option;
                     option << "contract_code=" << contract_code << "&period=" << period;
-                    if (size != -1)
+                    if (size != 0)
                     {
                         option << "&size=" << size;
                     }
-                    if (from != -1 && to != -1)
+                    if (from != 0 && to != 0)
                     {
                         option << "&from=" << size << "&to=" << to;
                     }
@@ -696,8 +696,8 @@ namespace huobi_futures
                     return result;
                 }
 
-                std::shared_ptr<GetSettlementRecordsResponse> GetSettlementRecords(const string &contract_code, long start_time = -1,
-                                                                                   long end_time = -1, int page_index = 1, int page_size = 20)
+                std::shared_ptr<GetSettlementRecordsResponse> GetSettlementRecords(const string &contract_code, long start_time = 0,
+                                                                                   long end_time = 0, int page_index = 1, int page_size = 20)
                 {
                     // location
                     stringstream location;
@@ -706,11 +706,11 @@ namespace huobi_futures
                     // option
                     stringstream option;
                     option << "contract_code=" << contract_code << "&page_index=" << page_index << "&page_size=" << page_size;
-                    if (start_time != -1)
+                    if (start_time != 0)
                     {
                         option << "&start_time=" << start_time;
                     }
-                    if (end_time != -1)
+                    if (end_time != 0)
                     {
                         option << "&end_time=" << end_time;
                     }

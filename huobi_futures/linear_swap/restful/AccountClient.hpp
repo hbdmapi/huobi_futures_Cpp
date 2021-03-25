@@ -171,7 +171,7 @@ namespace huobi_futures
                     {
                         content << ",\"margin_account\":\"" << margin_account << "\"";
                     }
-                    if (sub_uid != -1)
+                    if (sub_uid != 0)
                     {
                         content << ",\"sub_uid\":" << sub_uid;
                     }
