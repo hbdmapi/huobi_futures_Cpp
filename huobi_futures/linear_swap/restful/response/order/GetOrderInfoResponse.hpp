@@ -39,7 +39,7 @@ namespace huobi_futures
 
                         string offset;
 
-                        int lever_rate;
+                        int32_t lever_rate;
 
                         int64_t order_id;
 
@@ -63,9 +63,9 @@ namespace huobi_futures
 
                         float profit;
 
-                        int status;
+                        int32_t status;
 
-                        int order_type;
+                        int32_t order_type;
 
                         string order_source;
 
@@ -76,13 +76,17 @@ namespace huobi_futures
                         int64_t canceled_at;
 
                         string margin_account;
-                        
+
                         string margin_mode;
 
-                        JS_OBJ(symbol, contract_code, volume, price, order_price_type, direction, offset, lever_rate, \
-                              order_id, order_id_str, client_order_id, created_at, trade_volume, trade_turnover, fee, \
-                              trade_avg_price, margin_asset, margin_frozen, profit, status, order_type, order_source, \
-                              fee_asset, liquidation_type, canceled_at, margin_account, margin_mode);
+                        int32_t is_tpsl;
+
+                        float real_profit;
+
+                        JS_OBJ(symbol, contract_code, volume, price, order_price_type, direction, offset, lever_rate,
+                               order_id, order_id_str, client_order_id, created_at, trade_volume, trade_turnover, fee,
+                               trade_avg_price, margin_asset, margin_frozen, profit, status, order_type, order_source,
+                               fee_asset, liquidation_type, canceled_at, margin_account, margin_mode, is_tpsl, real_profit);
                     };
 
                     std::optional<std::vector<Data>> data;

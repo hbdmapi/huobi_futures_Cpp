@@ -34,9 +34,30 @@ namespace huobi_futures
 
                     string order_price_type;
 
+                    float tp_trigger_price;
+
+                    float tp_order_price;
+
+                    string tp_order_price_type;
+
+                    float sl_trigger_price;
+
+                    float sl_order_price;
+
+                    string sl_order_price_type;
+
                     PlaceOrderRequest()
                     {
-                        client_order_id = -1;
+                        price = 0;
+                        client_order_id = 0;
+
+                        tp_trigger_price = 0;
+                        tp_order_price = 0;
+                        tp_order_price_type = "";
+
+                        sl_trigger_price = 0;
+                        sl_order_price = 0;
+                        sl_order_price_type = "";
                     }
 
                     ///
@@ -45,13 +66,40 @@ namespace huobi_futures
                     string to_json() const
                     {
                         stringstream str_buf;
-                        str_buf << "{\"contract_code\":\"" << contract_code << "\",\"price\":" << price
+                        str_buf << "{\"contract_code\":\"" << contract_code << "\""
                                 << ",\"volume\":" << volume << ",\"direction\":\"" << direction << "\",\"offset\":\"" << offset
-                                << "\",\"lever_rate\":" << lever_rate << ",\"order_price_type\":\"" << order_price_type
-                                << "\"";
-                        if (client_order_id != -1)
+                                << "\",\"lever_rate\":" << lever_rate << ",\"order_price_type\":\"" << order_price_type << "\"";
+                        if (price != 0)
                         {
-                            str_buf << "\"client_order_id\":" << client_order_id;
+                            str_buf << ",\"price\":" << price;
+                        }
+                        if (client_order_id != 0)
+                        {
+                            str_buf << ",\"client_order_id\":" << client_order_id;
+                        }
+                        if (tp_trigger_price != 0)
+                        {
+                            str_buf << ",\"tp_trigger_price\":" << tp_trigger_price;
+                        }
+                        if (tp_order_price != 0)
+                        {
+                            str_buf << ",\"tp_order_price\":" << tp_order_price;
+                        }
+                        if (tp_order_price_type != "")
+                        {
+                            str_buf << ",\"tp_order_price_type\":\"" << tp_order_price_type << "\"";
+                        }
+                        if (sl_trigger_price != 0)
+                        {
+                            str_buf << ",\"sl_trigger_price\":" << sl_trigger_price;
+                        }
+                        if (sl_order_price != 0)
+                        {
+                            str_buf << ",\"sl_order_price\":" << sl_order_price;
+                        }
+                        if (sl_order_price_type != "")
+                        {
+                            str_buf << ",\"sl_order_price_type\":\"" << sl_order_price_type << "\"";
                         }
                         str_buf << "}";
                         return str_buf.str();

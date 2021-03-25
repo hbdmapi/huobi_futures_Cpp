@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_order
             {
-                struct GetOpenOrderResponse
+                struct GetHisordersResponse
                 {
                     string status;
 
@@ -27,31 +27,37 @@ namespace huobi_futures
                     {
                         struct Order
                         {
+                            int64_t order_id;
+
+                            string order_id_str;
+
                             string symbol;
 
                             string contract_code;
 
-                            int32_t volume;
-
-                            float price;
-
-                            string order_price_type;
-
-                            int32_t order_type;
+                            int32_t lever_rate;
 
                             string direction;
 
                             string offset;
 
-                            int32_t lever_rate;
+                            int32_t volume;
 
-                            int64_t order_id;
+                            float price;
 
-                            string order_id_str;
+                            int64_t create_date;
 
-                            JS::Nullable<int64_t> client_order_id;
+                            int64_t update_time;
 
-                            int64_t created_at;
+                            string order_source;
+
+                            string order_price_type;
+
+                            string margin_asset;
+
+                            float margin_frozen;
+
+                            float profit;
 
                             float trade_volume;
 
@@ -59,23 +65,15 @@ namespace huobi_futures
 
                             float fee;
 
-                            string fee_asset;
-
                             JS::Nullable<float> trade_avg_price;
-
-                            float margin_frozen;
-
-                            string margin_asset;
-
-                            float profit;
 
                             int32_t status;
 
-                            string order_source;
+                            int32_t order_type;
+
+                            string fee_asset;
 
                             JS::Nullable<string> liquidation_type;
-
-                            JS::Nullable<int64_t> canceled_at;
 
                             string margin_mode;
 
@@ -83,15 +81,12 @@ namespace huobi_futures
 
                             int32_t is_tpsl;
 
-                            int64_t update_time;
-
                             float real_profit;
 
-                            JS_OBJ(symbol, contract_code, volume, price, order_price_type, order_type, direction, offset,
-                                   lever_rate, order_id, order_id_str, client_order_id, created_at, trade_volume,
-                                   trade_turnover, fee, fee_asset, trade_avg_price, margin_frozen, margin_asset, profit,
-                                   status, order_source, liquidation_type, canceled_at, margin_mode, margin_account,
-                                   is_tpsl, update_time, real_profit);
+                            JS_OBJ(order_id, order_id_str, symbol, contract_code, lever_rate, direction, offset, volume, price,
+                                   create_date, update_time, order_source, order_price_type, margin_asset, margin_frozen, profit,
+                                   trade_volume, trade_turnover, fee, trade_avg_price, status, order_type, fee_asset,
+                                   liquidation_type, margin_mode, margin_account, is_tpsl, real_profit);
                         };
 
                         std::vector<Order> orders;

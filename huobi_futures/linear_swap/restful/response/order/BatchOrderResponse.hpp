@@ -15,7 +15,7 @@ namespace huobi_futures
         {
             namespace response_order
             {
-                struct CancelOrderResponse
+                struct BatchOrderResponse
                 {
                     string status;
 
@@ -27,20 +27,31 @@ namespace huobi_futures
                     {
                         struct Error
                         {
-                            string order_id;
+                            int32_t index;
 
-                            int64_t err_code;
+                            int32_t err_code;
 
                             string err_msg;
-
-                            JS_OBJ(order_id, err_code, err_msg);
+                            
+                            JS_OBJ(index, err_code, err_msg);
                         };
-
                         std::vector<Error> errors;
 
-                        string successes;
+                        struct Success
+                        {
+                            int32_t index;
 
-                        JS_OBJ(errors, successes);
+                            int64_t order_id;
+
+                            string order_id_str;
+
+                            std::optional<string> client_order_id;
+                            
+                            JS_OBJ(index, order_id, order_id_str, client_order_id);
+                        };
+                        std::vector<Success> success;
+
+                        JS_OBJ(errors, success);
                     };
                     std::optional<Data> data;
 
