@@ -179,14 +179,14 @@ TEST(OrderClient, GetHisorders)
     EXPECT_EQ(result->err_code.has_value(), false);
     for (auto item : result->data.value().orders)
     {
-        LOG(INFO) << item.contract_code << ":" << item.price << ":" << item.volume << ":" << item.margin_mode;
+        LOG(INFO) << item.contract_code << ":" << item.order_id << ":" << item.price << ":" << item.volume << ":" << item.margin_mode;
     }
 
     result = odClient.CrossGetHisorders("XRP-USDT", 0, 1, "0", 90);
     EXPECT_EQ(result->err_code.has_value(), false);
     for (auto item : result->data.value().orders)
     {
-        LOG(INFO) << item.contract_code << ":" << item.price << ":" << item.volume << ":" << item.margin_mode;
+        LOG(INFO) << item.contract_code << ":" << item.order_id << ":" << item.price << ":" << item.volume << ":" << item.margin_mode;
     }
 }
 
