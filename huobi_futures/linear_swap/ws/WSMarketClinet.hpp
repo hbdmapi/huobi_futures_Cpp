@@ -41,7 +41,7 @@ namespace huobi_futures
             class WSMarketClient : public WebSocketOp
             {
             public:
-                WSMarketClient(string host = utils::DEFAULT_HOST) : WebSocketOp("/linear-swap-ws", host)
+                WSMarketClient(const string &host = utils::DEFAULT_HOST) : WebSocketOp("/linear-swap-ws", host)
                 {
                     Connect();
                 }
@@ -52,7 +52,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const SubKLineResponse &data)> _OnSubKLine;
-                void SubKLine(string contract_code, string period, _OnSubKLine callbackFun, string id = utils::DEFAULT_ID)
+                void SubKLine(const string &contract_code, const string &period, _OnSubKLine callbackFun, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".kline." << period;
@@ -75,9 +75,10 @@ namespace huobi_futures
                         callbackFun(obj);
                     });
                 }
-                
+
                 typedef std::function<void(const ReqKLineResponse &data)> _OnReqKLine;
-                void ReqKLine(string contract_code, string period, long from, long to, _OnReqKLine callbackFun, string id = utils::DEFAULT_ID)
+                void ReqKLine(const string &contract_code, const string &period, long from, long to, _OnReqKLine callbackFun,
+                              const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".kline." << period;
@@ -104,7 +105,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const SubDepthResponse &data)> _OnSubDepth;
-                void SubDepth(string contract_code, string type, _OnSubDepth callbackFun, string id = utils::DEFAULT_ID)
+                void SubDepth(const string &contract_code, const string &type, _OnSubDepth callbackFun, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".depth." << type;
@@ -128,7 +129,8 @@ namespace huobi_futures
                     });
                 }
 
-                void SubDepthIncremental(string contract_code, string size, _OnSubDepth callbackFun, string id = utils::DEFAULT_ID)
+                void SubDepthIncremental(const string &contract_code, const string &size, _OnSubDepth callbackFun,
+                                         const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".depth." << size << ".high_freq";
@@ -154,7 +156,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const SubMarketDetailResponse &data)> _OnSubMarketDetail;
-                void SubMarketDetail(string contract_code, _OnSubMarketDetail callbackFun, string id = utils::DEFAULT_ID)
+                void SubMarketDetail(const string &contract_code, _OnSubMarketDetail callbackFun, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".detail";
@@ -179,7 +181,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const SubBboResponse &data)> _OnSubBbo;
-                void SubBbo(string contract_code, _OnSubBbo callbackFun, string id = utils::DEFAULT_ID)
+                void SubBbo(const string &contract_code, _OnSubBbo callbackFun, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".bbo";
@@ -204,7 +206,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const ReqTradeDetailResponse &data)> _OnReqTradeDetail;
-                void ReqTradeDetail(string contract_code, _OnReqTradeDetail callbackFun, int size = 0, string id = utils::DEFAULT_ID)
+                void ReqTradeDetail(const string &contract_code, _OnReqTradeDetail callbackFun, int size = 0, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".trade.detail";
@@ -230,7 +232,7 @@ namespace huobi_futures
                 }
 
                 typedef std::function<void(const SubTradeDetailResponse &data)> _OnSubTradeDetail;
-                void SubTradeDetail(string contract_code, _OnSubTradeDetail callbackFun, string id = utils::DEFAULT_ID)
+                void SubTradeDetail(const string &contract_code, _OnSubTradeDetail callbackFun, const string &id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".trade.detail";
@@ -253,8 +255,6 @@ namespace huobi_futures
                         callbackFun(obj);
                     });
                 }
-
-                
             };
         } // namespace ws
     }     // namespace linear_swap
