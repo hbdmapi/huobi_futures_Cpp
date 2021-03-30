@@ -384,7 +384,7 @@ namespace huobi_futures
                     fun(data);
                 }
 
-                void HandleReqCallbackFun(string ch_src, string data, const nlohmann::json &jdata)
+                void HandleReqCallbackFun(const string &ch_src, string data, const nlohmann::json &jdata)
                 {
                     //LOG(INFO) << data;
                     string ch = ch_src;
