@@ -150,7 +150,7 @@ namespace huobi_futures
                 }
 
                 out_name = in_url.substr(0, index);
-                out_port = -1;
+                out_port = 0;
                 if (out_name == "ws")
                 {
                     out_port = 80;
@@ -159,7 +159,7 @@ namespace huobi_futures
                 {
                     out_port = 443;
                 }
-                if (out_port == -1)
+                if (out_port == 0)
                 {
                     LOG(ERROR) << "url is error, such as ws://host/path or wss://host/path";
                     return false;

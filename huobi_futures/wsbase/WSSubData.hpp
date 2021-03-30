@@ -29,7 +29,7 @@ namespace huobi_futures
                         << "\"sub\":\"" << sub << "\",\"id\":\"" << id << "\"";
                 if (!data_type.empty())
                 {
-                    str_buf << "\",\"data_type\":\"" << data_type << "\"";
+                    str_buf << ",\"data_type\":\"" << data_type << "\"";
                 }
                 str_buf << "}";
 

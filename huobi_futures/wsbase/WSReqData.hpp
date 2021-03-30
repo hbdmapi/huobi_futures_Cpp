@@ -24,18 +24,33 @@ namespace huobi_futures
 
             int64_t to;
 
+            int32_t size;
+
             WSReqData()
             {
-                from = -1;
-                to = -1;
+                from = 0;
+                to = 0;
+                size = 0;
             }
 
             string ToJson()
             {
                 stringstream str_buf;
                 str_buf << "{"
-                        << "\"req\":\"" << req << "\",\"id\":\"" << id
-                        << "\",\"from\":" << from << ",\"to\":" << to << "}";
+                        << "\"req\":\"" << req << "\",\"id\":\"" << id << "\"";
+                if (from != 0)
+                {
+                    str_buf << ",\"from\":" << from;
+                }
+                if (to != 0)
+                {
+                    str_buf << ",\"to\":" << to;
+                }
+                if (size != 0)
+                {
+                    str_buf << ",\"size\":" << size;
+                }
+                str_buf << "}";
 
                 return str_buf.str();
             }

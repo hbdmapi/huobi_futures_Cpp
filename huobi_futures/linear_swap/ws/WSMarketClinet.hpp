@@ -9,6 +9,18 @@ typedef huobi_futures::linear_swap::ws::response_market::ReqKLineResponse ReqKLi
 #include "huobi_futures/linear_swap/ws/response/market/SubDepthResponse.hpp"
 typedef huobi_futures::linear_swap::ws::response_market::SubDepthResponse SubDepthResponse;
 
+#include "huobi_futures/linear_swap/ws/response/market/SubBboResponse.hpp"
+typedef huobi_futures::linear_swap::ws::response_market::SubBboResponse SubBboResponse;
+
+#include "huobi_futures/linear_swap/ws/response/market/ReqTradeDetailResponse.hpp"
+typedef huobi_futures::linear_swap::ws::response_market::ReqTradeDetailResponse ReqTradeDetailResponse;
+
+#include "huobi_futures/linear_swap/ws/response/market/SubTradeDetailResponse.hpp"
+typedef huobi_futures::linear_swap::ws::response_market::SubTradeDetailResponse SubTradeDetailResponse;
+
+#include "huobi_futures/linear_swap/ws/response/market/SubMarketDetailResponse.hpp"
+typedef huobi_futures::linear_swap::ws::response_market::SubMarketDetailResponse SubMarketDetailResponse;
+
 #include "huobi_futures/wsbase/WSSubData.hpp"
 typedef huobi_futures::wsbase::WSSubData WSSubData;
 
@@ -39,8 +51,8 @@ namespace huobi_futures
                     Disconnect();
                 }
 
-                typedef std::function<void(const SubKLineResponse &data)> _OnSubKLineResponse;
-                void SubKLine(string contract_code, string period, _OnSubKLineResponse callbackFun, string id = utils::DEFAULT_ID)
+                typedef std::function<void(const SubKLineResponse &data)> _OnSubKLine;
+                void SubKLine(string contract_code, string period, _OnSubKLine callbackFun, string id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".kline." << period;
@@ -63,20 +75,9 @@ namespace huobi_futures
                         callbackFun(obj);
                     });
                 }
-
-                void UnsubKLine(string contract_code, string period, string id = utils::DEFAULT_ID)
-                {
-                    stringstream ch;
-                    ch << "market." << contract_code << ".kline." << period;
-                    WSUnsubData unsub_data;
-                    unsub_data.unsub = ch.str();
-                    unsub_data.id = id;
-
-                    Unsub(unsub_data.ToJson(), ch.str());
-                }
-
-                typedef std::function<void(const ReqKLineResponse &data)> _OnReqKLineResponse;
-                void ReqKLine(string contract_code, string period, long from, long to, _OnReqKLineResponse callbackFun, string id = utils::DEFAULT_ID)
+                
+                typedef std::function<void(const ReqKLineResponse &data)> _OnReqKLine;
+                void ReqKLine(string contract_code, string period, long from, long to, _OnReqKLine callbackFun, string id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".kline." << period;
@@ -102,8 +103,8 @@ namespace huobi_futures
                     });
                 }
 
-                typedef std::function<void(const SubDepthResponse &data)> _OnSubDepthResponse;
-                void SubDepth(string contract_code, string type, _OnSubDepthResponse callbackFun, string id = utils::DEFAULT_ID)
+                typedef std::function<void(const SubDepthResponse &data)> _OnSubDepth;
+                void SubDepth(string contract_code, string type, _OnSubDepth callbackFun, string id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
                     ch << "market." << contract_code << ".depth." << type;
@@ -127,16 +128,133 @@ namespace huobi_futures
                     });
                 }
 
-                void UnSubDepth(string contract_code, string type, string id = utils::DEFAULT_ID)
+                void SubDepthIncremental(string contract_code, string size, _OnSubDepth callbackFun, string id = utils::DEFAULT_ID)
                 {
                     stringstream ch;
-                    ch << "market." << contract_code << ".depth." << type;
-                    WSUnsubData unsub_data;
-                    unsub_data.unsub = ch.str();
-                    unsub_data.id = id;
+                    ch << "market." << contract_code << ".depth." << size << ".high_freq";
+                    WSSubData sub_data;
+                    sub_data.sub = ch.str();
+                    sub_data.id = id;
+                    sub_data.data_type = "incremental";
 
-                    Unsub(unsub_data.ToJson(), ch.str());
+                    Sub(sub_data.ToJson(), ch.str(), [&](const string &data) {
+                        SubDepthResponse obj;
+                        JS::ParseContext parseContext(data);
+                        parseContext.allow_unnasigned_required_members = false;
+
+                        if (parseContext.parseTo(obj) != JS::Error::NoError)
+                        {
+                            std::string errorStr = parseContext.makeErrorString();
+                            LOG(ERROR) << "Error parsing struct SubDepthResponse error";
+                            LOG(ERROR) << data;
+                            return;
+                        }
+                        callbackFun(obj);
+                    });
                 }
+
+                typedef std::function<void(const SubMarketDetailResponse &data)> _OnSubMarketDetail;
+                void SubMarketDetail(string contract_code, _OnSubMarketDetail callbackFun, string id = utils::DEFAULT_ID)
+                {
+                    stringstream ch;
+                    ch << "market." << contract_code << ".detail";
+                    WSSubData sub_data;
+                    sub_data.sub = ch.str();
+                    sub_data.id = id;
+
+                    Sub(sub_data.ToJson(), ch.str(), [&](const string &data) {
+                        SubMarketDetailResponse obj;
+                        JS::ParseContext parseContext(data);
+                        parseContext.allow_unnasigned_required_members = false;
+
+                        if (parseContext.parseTo(obj) != JS::Error::NoError)
+                        {
+                            std::string errorStr = parseContext.makeErrorString();
+                            LOG(ERROR) << "Error parsing struct SubMarketDetailResponse error";
+                            LOG(ERROR) << data;
+                            return;
+                        }
+                        callbackFun(obj);
+                    });
+                }
+
+                typedef std::function<void(const SubBboResponse &data)> _OnSubBbo;
+                void SubBbo(string contract_code, _OnSubBbo callbackFun, string id = utils::DEFAULT_ID)
+                {
+                    stringstream ch;
+                    ch << "market." << contract_code << ".bbo";
+                    WSSubData sub_data;
+                    sub_data.sub = ch.str();
+                    sub_data.id = id;
+
+                    Sub(sub_data.ToJson(), ch.str(), [&](const string &data) {
+                        SubBboResponse obj;
+                        JS::ParseContext parseContext(data);
+                        parseContext.allow_unnasigned_required_members = false;
+
+                        if (parseContext.parseTo(obj) != JS::Error::NoError)
+                        {
+                            std::string errorStr = parseContext.makeErrorString();
+                            LOG(ERROR) << "Error parsing struct SubBboResponse error";
+                            LOG(ERROR) << data;
+                            return;
+                        }
+                        callbackFun(obj);
+                    });
+                }
+
+                typedef std::function<void(const ReqTradeDetailResponse &data)> _OnReqTradeDetail;
+                void ReqTradeDetail(string contract_code, _OnReqTradeDetail callbackFun, int size = 0, string id = utils::DEFAULT_ID)
+                {
+                    stringstream ch;
+                    ch << "market." << contract_code << ".trade.detail";
+                    WSReqData req_data;
+                    req_data.req = ch.str();
+                    req_data.id = id;
+                    req_data.size = size;
+
+                    Req(req_data.ToJson(), ch.str(), [&](const string &data) {
+                        ReqTradeDetailResponse obj;
+                        JS::ParseContext parseContext(data);
+                        parseContext.allow_unnasigned_required_members = false;
+
+                        if (parseContext.parseTo(obj) != JS::Error::NoError)
+                        {
+                            std::string errorStr = parseContext.makeErrorString();
+                            LOG(ERROR) << "Error parsing struct ReqTradeDetailResponse error";
+                            LOG(ERROR) << data;
+                            return;
+                        }
+                        callbackFun(obj);
+                    });
+                }
+
+                typedef std::function<void(const SubTradeDetailResponse &data)> _OnSubTradeDetail;
+                void SubTradeDetail(string contract_code, _OnSubTradeDetail callbackFun, string id = utils::DEFAULT_ID)
+                {
+                    stringstream ch;
+                    ch << "market." << contract_code << ".trade.detail";
+                    WSSubData sub_data;
+                    sub_data.sub = ch.str();
+                    sub_data.id = id;
+
+                    Sub(sub_data.ToJson(), ch.str(), [&](const string &data) {
+                        SubTradeDetailResponse obj;
+                        JS::ParseContext parseContext(data);
+                        parseContext.allow_unnasigned_required_members = false;
+
+                        if (parseContext.parseTo(obj) != JS::Error::NoError)
+                        {
+                            std::string errorStr = parseContext.makeErrorString();
+                            LOG(ERROR) << "Error parsing struct SubTradeDetailResponse error";
+                            LOG(ERROR) << data;
+                            return;
+                        }
+                        callbackFun(obj);
+                    });
+                }
+
+                
             };
         } // namespace ws
     }     // namespace linear_swap

@@ -34,6 +34,8 @@ using std::pair;
 
 #include <algorithm>
 #include <cctype>
+#include <thread>
+#include <chrono>
 
 typedef std::function<void(const string &)> _call_back_fun;
 
@@ -45,16 +47,6 @@ namespace huobi_futures
         {
             class WebSocketOp
             {
-            public:
-                void RunForever()
-                {
-                    if (this->p_ws == NULL)
-                    {
-                        return;
-                    }
-                    this->p_ws->RunForever();
-                }
-
             protected:
                 WebSocketOp(const string &path, const string &host = utils::DEFAULT_HOST,
                             const string &access_key = "", const string &secret_key = "")
@@ -65,49 +57,77 @@ namespace huobi_futures
                     this->ak = access_key;
                     this->sk = secret_key;
 
-                    InitWs();
+                    can_work = false;
                 }
 
                 ~WebSocketOp()
                 {
-                    DispWs();
+                    Disconnect();
                 }
 
                 bool Connect()
                 {
+                    p_ws = new WebSocket();
+                    p_ws->OnOpen = std::bind(&WebSocketOp::WsOnOpen, this);
+                    p_ws->OnClose = std::bind(&WebSocketOp::WsOnClose, this);
+                    p_ws->OnMsg = std::bind(&WebSocketOp::WsOnMsg, this, std::placeholders::_1, std::placeholders::_2);
+
                     stringstream str_buf;
                     str_buf << "wss://" << host << path;
                     string url = str_buf.str();
-                    LOG(INFO) << "ws full path:" << url;
-                    return p_ws->Connect(url);
+                    LOG(INFO) << url;
+                    bool con_ok = p_ws->Connect(url);
+                    if (!con_ok)
+                    {
+                        return false;
+                    }
+                    std::thread t1([&] { p_ws->RunForever(); });
+                    t1.detach();
+                    return true;
                 }
 
                 void Disconnect()
                 {
-                    DispWs();
+                    if (p_ws == NULL)
+                    {
+                        return;
+                    }
+
+                    delete p_ws;
+                    p_ws = NULL;
                 }
 
                 bool Sub(const string &sub_str, const string &ch_src, _call_back_fun fun)
                 {
-                    std::unique_lock<std::mutex> lck(mtx);
+                    while (!can_work)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+
                     string ch = ch_src;
                     std::transform(ch.begin(), ch.end(), ch.begin(),
                                    [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
                     if (sub_map_call_fun.find(ch) != sub_map_call_fun.end())
                     {
+                        sub_map_call_fun[ch] = fun;
                         return true;
                     }
                     sub_map_call_fun.insert(pair<string, _call_back_fun>(ch, fun));
 
-                    send_msg_buff.push_back(sub_str);
+                    p_ws->SendMsg(sub_str);
+                    LOG(INFO) << "send:" << sub_str;
 
                     return true;
                 }
 
                 bool Unsub(const string &unsub_str, const string &ch_src)
                 {
-                    std::unique_lock<std::mutex> lck(mtx);
+                    while (!can_work)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+
                     string ch = ch_src;
                     std::transform(ch.begin(), ch.end(), ch.begin(),
                                    [](unsigned char c) -> unsigned char { return std::tolower(c); });
@@ -117,14 +137,19 @@ namespace huobi_futures
                         return true;
                     }
 
-                    send_msg_buff.push_back(unsub_str);
+                    p_ws->SendMsg(unsub_str);
+                    LOG(INFO) << "send:" << unsub_str;
 
                     return true;
                 }
 
                 bool Req(const string &req_str, const string &ch_src, _call_back_fun fun)
                 {
-                    std::unique_lock<std::mutex> lck(mtx);
+                    while (!can_work)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+
                     string ch = ch_src;
                     std::transform(ch.begin(), ch.end(), ch.begin(),
                                    [](unsigned char c) -> unsigned char { return std::tolower(c); });
@@ -135,69 +160,49 @@ namespace huobi_futures
                     }
                     req_map_call_fun.insert(pair<string, _call_back_fun>(ch, fun));
 
-                    send_msg_buff.push_back(req_str);
+                    p_ws->SendMsg(req_str);
+                    LOG(INFO) << "send:" << req_str;
 
                     return true;
                 }
 
             private:
-                void InitWs()
-                {
-                    p_ws = new WebSocket();
-
-                    p_ws->OnOpen = std::bind(&WebSocketOp::WsOnOpen, this);
-                    p_ws->OnClose = std::bind(&WebSocketOp::WsOnClose, this);
-                    p_ws->OnMsg = std::bind(&WebSocketOp::WsOnMsg, this, std::placeholders::_1, std::placeholders::_2);
-                }
-
-                void DispWs()
-                {
-                    delete p_ws;
-                    p_ws = NULL;
-                }
-
                 void WsOnOpen()
                 {
                     LOG(INFO) << "WebSocket opened";
 
-                    if (ak != "" && sk != "")
+                    can_work = true;
+                    if (ak == "" || sk == "")
                     {
-                        time_t now;
-                        time(&now);
-
-                        char pchar_time[sizeof "2011-10-08T07:07:09"];
-                        strftime(pchar_time, sizeof pchar_time, "%FT%T", gmtime(&now));
-
-                        stringstream para;
-                        para << "AccessKeyId=" << ak << "&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=" << HttpRequest::Instance().UrlEncode(pchar_time);
-
-                        string signature = utils::Signer::CreateSignature("GET", host, path, para.str(), sk);
-
-                        WSAuthData auth;
-                        auth.AccessKeyId = ak;
-                        auth.Signature = signature;
-                        auth.Timestamp = string(pchar_time);
-
-                        string auth_str = auth.ToJson();
-                        p_ws->SendMsg(auth_str);
-                        LOG(INFO) << "send:" << auth_str;
+                        return;
                     }
-                    else
-                    {
-                        std::unique_lock<std::mutex> lck(mtx);
+                    can_work = false;
 
-                        for (auto item : send_msg_buff)
-                        {
-                            p_ws->SendMsg(item);
-                            LOG(INFO) << "send:" << item;
-                        }
-                        send_msg_buff.clear();
-                    }
+                    time_t now;
+                    time(&now);
+
+                    char pchar_time[sizeof "2011-10-08T07:07:09"];
+                    strftime(pchar_time, sizeof pchar_time, "%FT%T", gmtime(&now));
+
+                    stringstream para;
+                    para << "AccessKeyId=" << ak << "&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=" << HttpRequest::Instance().UrlEncode(pchar_time);
+
+                    string signature = utils::Signer::CreateSignature("GET", host, path, para.str(), sk);
+
+                    WSAuthData auth;
+                    auth.AccessKeyId = ak;
+                    auth.Signature = signature;
+                    auth.Timestamp = string(pchar_time);
+
+                    string auth_str = auth.ToJson();
+                    p_ws->SendMsg(auth_str);
+                    LOG(INFO) << "send:" << auth_str;
                 }
 
                 void WsOnClose()
                 {
                     LOG(INFO) << "WebSocket close.";
+                    can_work = false;
                 }
 
                 void WsOnMsg(const char *data, int len)
@@ -243,14 +248,11 @@ namespace huobi_futures
                             LOG(INFO) << "recv:" << plaintext;
                             if (jdata["err-code"].get<int>() == 0)
                             {
-                                std::unique_lock<std::mutex> lck(mtx);
-
-                                for (auto item : send_msg_buff)
-                                {
-                                    p_ws->SendMsg(item);
-                                    LOG(INFO) << "send:" << item;
-                                }
-                                send_msg_buff.clear();
+                                can_work = true;
+                            }
+                            else
+                            {
+                                Disconnect();
                             }
                         }
                         else if (op == "notify")
@@ -401,6 +403,7 @@ namespace huobi_futures
                         return;
                     }
                     fun(data);
+                    req_map_call_fun.erase(ch);
                 }
 
                 string host;
@@ -410,8 +413,7 @@ namespace huobi_futures
                 string ak;
                 string sk;
 
-                list<string> send_msg_buff;
-                mutex mtx;
+                bool can_work;
 
                 map<string, _call_back_fun> sub_map_call_fun;
                 map<string, _call_back_fun> req_map_call_fun;
