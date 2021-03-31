@@ -5,6 +5,7 @@
 #include "restful_trigger_order_test.hpp"
 #include "restful_transfer_test.hpp"
 #include "ws_market_test.hpp"
+#include "ws_index_test.hpp"
 #include "ws_notify_test.hpp"
 
 int my_argc;
