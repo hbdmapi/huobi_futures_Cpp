@@ -212,6 +212,7 @@ namespace huobi_futures
 
                     string plaintext(buf);
                     nlohmann::json jdata = nlohmann::json::parse(plaintext);
+                    // LOG(INFO) << plaintext;
 
                     if (jdata.contains("ping")) // market heartbeat
                     {

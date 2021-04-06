@@ -26,8 +26,12 @@ namespace huobi_futures
             {
                 stringstream str_buf;
                 str_buf << "{"
-                        << "\"op\":\"" << op << "\",\"cid\":\"" << cid
-                        << "\",\"topic\":\"" << topic << "\"}";
+                        << "\"op\":\"" << op << "\"";
+                if (cid != "")
+                {
+                    str_buf << ",\"cid\":\"" << cid << "\"";
+                }
+                str_buf << ",\"topic\":\"" << topic << "\"}";
 
                 return str_buf.str();
             }

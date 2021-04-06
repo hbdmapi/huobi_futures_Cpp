@@ -191,6 +191,7 @@ namespace huobi_futures
                 WebSocket *p_cls_obj = (WebSocket *)user;
 
                 string message;
+                // LOG(ERROR) << message;
                 switch (reason)
                 {
                 case LWS_CALLBACK_CLIENT_ESTABLISHED:
