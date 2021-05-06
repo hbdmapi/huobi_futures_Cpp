@@ -65,6 +65,17 @@ TEST(MarketClient, GetDepth)
     }
 }
 
+TEST(MarketClient, GetBbo)
+{
+    MarketClient mkClient;
+    auto result = mkClient.GetBbo("BTC-USDT");
+    EXPECT_EQ(result->err_code.has_value(), false);
+    for (auto pv : result->ticks.data)
+    {
+        LOG(INFO) << *(pv.ask.begin()) << "/" << *(pv.ask.begin() + 1);
+    }
+}
+
 TEST(MarketClient, GetKLine)
 {
     MarketClient mkClient;

@@ -23,6 +23,9 @@ typedef huobi_futures::linear_swap::restful::response_market::GetOpenInterestRes
 #include "huobi_futures/linear_swap/restful/response/market/GetDepthResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetDepthResponse GetDepthResponse;
 
+#include "huobi_futures/linear_swap/restful/response/market/GetBboResponse.hpp"
+typedef huobi_futures::linear_swap::restful::response_market::GetBboResponse GetBboResponse;
+
 #include "huobi_futures/linear_swap/restful/response/market/GetKLineResponse.hpp"
 typedef huobi_futures::linear_swap::restful::response_market::GetKLineResponse GetKLineResponse;
 
@@ -200,6 +203,30 @@ namespace huobi_futures
                     string url = pb->Build(location.str());
 
                     auto result = url_base::HttpRequest::Instance().Get<GetDepthResponse>(url);
+                    return result;
+                }
+
+                std::shared_ptr<GetBboResponse> GetBbo(const string &contract_code = "")
+                {
+                    // location
+                    stringstream location;
+                    location << "/linear-swap-ex/market/bbo";
+
+                    // option
+                    stringstream option;
+                    if (contract_code != "")
+                    {
+                        option << "contract_code=" << contract_code;
+                    }
+
+                    if (!option.str().empty())
+                    {
+                        location << "?" << option.str();
+                    }
+
+                    string url = pb->Build(location.str());
+
+                    auto result = url_base::HttpRequest::Instance().Get<GetBboResponse>(url);
                     return result;
                 }
 
